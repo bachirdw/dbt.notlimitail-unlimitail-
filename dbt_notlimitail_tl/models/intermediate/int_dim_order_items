@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: int_dim_order_items
+    description: "Modèle intermédiaire qui joint les articles de commande avec les informations des produits. Le grain est l'article de commande (une ligne par order_item_id)."
+    columns:
+      - name: order_item_id
+        description: "Clé primaire de l'article de commande."
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        description: "Clé étrangère vers la table des commandes."
+        tests:
+          - not_null
+      - name: product_id
+        description: "Clé étrangère vers la table des produits."
+        tests:
+          - not_null
+      - name: item_sale_price
+        description: "Prix de vente de l'article. Doit être positif."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0

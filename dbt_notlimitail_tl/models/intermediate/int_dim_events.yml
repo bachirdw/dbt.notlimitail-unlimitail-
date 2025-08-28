@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: int_dim_events
+    description: "Modèle intermédiaire qui enrichit les événements avec les coûts de campagne simulés. Le grain est l'événement (une ligne par event_id)."
+    columns:
+      - name: event_id
+        description: "Clé primaire de l'événement."
+        tests:
+          - unique
+          - not_null
+      - name: event_type
+        description: "Type de l'événement (ex: page_view, product_click)."
+        tests:
+          - not_null
+      - name: event_cost
+        description: "Coût simulé de l'événement. Doit être positif ou nul."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
