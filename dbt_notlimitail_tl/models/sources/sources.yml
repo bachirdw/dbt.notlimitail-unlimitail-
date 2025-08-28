@@ -1,0 +1,19 @@
+# pour générer la doc
+#dbt run-operation generate_source --args '{"schema_name": "notlimitail_datadubrazil", "table_names": ["customers", "orders", "order_item", "orders_payment", "products", "sellers"]}'
+
+# Fichier : dbt_notlimitail_tl/models/sources/sources.yml
+
+version: 2
+
+sources:
+  - name: thelook_ecommerce
+    description: "Jeu de données public de Looker simulant une entreprise e-commerce."
+    # C'est la ligne la plus importante : on dit à dbt où chercher.
+    database: bigquery-public-data
+    schema: thelook_ecommerce
+    tables:
+      - name: users
+      - name: orders
+      - name: order_items
+      - name: products
+      - name: events

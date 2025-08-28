@@ -1,0 +1,6 @@
+traffic_source,campaign_name,cost_per_click,monthly_budget
+Adwords,Campagne Google Ads,1.50,5000
+Facebook,Campagne Facebook Ads,0.75,3000
+Email,Campagnes Emailing,0.10,500
+YouTube,Publicite YouTube,2.50,4000
+Organic,SEO,0.0,1500
