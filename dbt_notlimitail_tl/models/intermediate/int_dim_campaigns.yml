@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: int_dim_campaigns
+    description: "Modèle intermédiaire qui prépare les données des campagnes à partir du seed. Le grain est la campagne (une ligne par traffic_source)."
+    columns:
+      - name: campaign_id
+        description: "Clé primaire de la campagne (basée sur traffic_source)."
+        tests:
+          - unique
+          - not_null

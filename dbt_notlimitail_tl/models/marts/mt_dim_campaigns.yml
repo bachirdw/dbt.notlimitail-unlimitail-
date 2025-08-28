@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: mt_dim_campaigns
+    description: "DIMENSION : Table finale décrivant les campagnes marketing. C'est la source de vérité pour l'analyse des campagnes."
+    columns:
+      - name: campaign_id
+        description: "Clé primaire unique de la campagne."
+        tests:
+          - unique
+          - not_null
+      - name: channel
+        description: "Canal marketing de la campagne (Paid, Owned, Organic)."
+        tests:
+          - accepted_values:
+              values: ['Paid', 'Owned', 'Organic', 'Other']

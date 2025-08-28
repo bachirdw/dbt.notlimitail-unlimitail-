@@ -8,7 +8,7 @@ with products as (
 
 order_items as (
     -- On utilise le modèle intermédiaire qui a déjà les infos produits jointes
-    select * from {{ ref('int_order_items') }}
+    select * from {{ ref('int_dim_order_items') }}
 ),
 
 -- On agrège les faits au niveau du produit

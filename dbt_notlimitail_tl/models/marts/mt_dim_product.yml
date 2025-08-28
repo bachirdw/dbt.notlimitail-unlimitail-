@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: mt_dim_product
+    description: "DIMENSION : Catalogue produit final, enrichi avec des métriques de vente agrégées."
+    columns:
+      - name: product_id
+        description: "Clé primaire unique du produit."
+        tests:
+          - unique
+          - not_null
+      - name: total_revenue
+        description: "Revenu total généré par ce produit. Doit être positif ou nul."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0

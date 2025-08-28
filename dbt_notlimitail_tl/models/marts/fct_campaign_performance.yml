@@ -1,0 +1,103 @@
+version: 2
+
+models:
+  - name: fct_campaign_performance
+    description: "TABLE DE FAITS : Agrège les métriques de performance par jour et par campagne."
+    columns:
+      - name: event_date
+        description: "Date de l'agrégation."
+      - name: campaign_name
+        description: "Nom de la campagne."
+
+# # =================================================================
+# # ==                  DÉBUT DE LA COUCHE SÉMANTIQUE                  ==
+# # =================================================================
+
+# semantic_models:
+#   - name: fct_campaign_performance
+#     description: "Modèle sémantique pour l'analyse de la performance des campagnes."
+    
+#     # LIGNE MANQUANTE À AJOUTER CI-DESSOUS
+#     model: ref('fct_campaign_performance')
+
+#     entities:
+#       - name: campaign
+#         type: foreign
+#         expr: campaign_name
+
+#     dimensions:
+#       - name: event_date
+#         type: time
+#         type_params:
+#           time_granularity: day
+
+#     measures:
+#       - name: total_cost
+#         agg: sum
+#       - name: total_clicks
+#         agg: sum
+#       - name: total_revenue
+#         agg: sum
+#       - name: total_orders
+#         agg: sum
+
+# metrics:
+#   # --- Métriques de Base ---
+#   - name: ad_spend
+#     label: "Dépenses Publicitaires"
+#     description: "Le coût total des campagnes sur une période."
+#     type: simple
+#     type_params:
+#       measure: total_cost
+
+#   - name: revenue
+#     label: "Revenu"
+#     description: "Le revenu total généré sur une période."
+#     type: simple
+#     type_params:
+#       measure: total_revenue
+
+#   - name: clicks
+#     label: "Clics"
+#     description: "Le nombre total de clics sur les publicités."
+#     type: simple
+#     type_params:
+#       measure: total_clicks
+
+#   - name: orders
+#     label: "Commandes"
+#     description: "Le nombre total de commandes."
+#     type: simple
+#     type_params:
+#       measure: total_orders
+
+#   # --- Métriques Dérivées (KPIs) ---
+#   - name: roas
+#     label: "ROAS (Return On Ad Spend)"
+#     description: "Le retour sur investissement publicitaire. (Revenu / Dépenses)"
+#     type: derived
+#     type_params:
+#       expr: "revenue / ad_spend"
+#       metrics:
+#         - revenue
+#         - ad_spend
+
+#   - name: cpc
+#     label: "CPC (Coût Par Clic)"
+#     description: "Le coût moyen pour chaque clic publicitaire. (Dépenses / Clics)"
+#     type: derived
+#     type_params:
+#       expr: "ad_spend / clicks"
+#       metrics:
+#         - ad_spend
+#         - clicks
+
+#   - name: average_order_value
+#     label: "AOV (Panier Moyen)"
+#     description: "La valeur moyenne de chaque commande. (Revenu / Commandes)"
+#     type: derived
+#     type_params:
+#       expr: "revenue / orders"
+#       metrics:
+#         - revenue
+#         - orders
