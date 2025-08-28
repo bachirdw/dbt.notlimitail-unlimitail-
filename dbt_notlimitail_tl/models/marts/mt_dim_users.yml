@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: mt_dim_users
+    description: "DIMENSION : Table finale des utilisateurs, enrichie avec des métriques d'achat (RFM)."
+    columns:
+      - name: user_id
+        description: "Clé primaire unique de l'utilisateur."
+        tests:
+          - unique
+          - not_null
+      - name: number_of_orders
+        description: "Nombre total de commandes passées par l'utilisateur."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0

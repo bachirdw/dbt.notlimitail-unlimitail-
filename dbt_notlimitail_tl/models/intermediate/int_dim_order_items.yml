@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: int_dim_order_items
-    description: "Modèle intermédiaire qui joint les articles de commande avec les informations des produits. Le grain est l'article de commande (une ligne par order_item_id)."
+    description: "Modèle intermédiaire qui joint les articles de commande avec les informations des produits."
     columns:
       - name: order_item_id
         description: "Clé primaire de l'article de commande."

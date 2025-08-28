@@ -37,9 +37,9 @@ models:
       +materialized: table # On peut mettre 'table' par défaut pour les marts
 
 
-# CONFIG DE LA COUCHE SÉMANTIQUE          
-semantic-models:
-  defaults:
-    # On dit au Semantic Layer d'utiliser notre modèle 'dim_time_spine'
-    # comme calendrier de référence pour tous les calculs temporels.
-    time_spine_source: ref('dim_time_spine')
+# # CONFIG DE LA COUCHE SÉMANTIQUE          
+# semantic-models:
+#   defaults:
+#     # On dit au Semantic Layer d'utiliser notre modèle 'dim_time_spine'
+#     # comme calendrier de référence pour tous les calculs temporels.
+#     time_spine_source: ref('dim_time_spine')
