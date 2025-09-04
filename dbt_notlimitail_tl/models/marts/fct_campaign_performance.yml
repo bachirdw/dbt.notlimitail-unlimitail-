@@ -1,103 +1,71 @@
+# Fichier : dbt_notlimitail_tl/models/marts/fct_campaign_performance.yml
+
 version: 2
 
 models:
   - name: fct_campaign_performance
-    description: "TABLE DE FAITS : Agrège les métriques de performance par jour et par campagne."
-    columns:
-      - name: event_date
-        description: "Date de l'agrégation."
-      - name: campaign_name
-        description: "Nom de la campagne."
-
-# # =================================================================
-# # ==                  DÉBUT DE LA COUCHE SÉMANTIQUE                  ==
-# # =================================================================
-
-# semantic_models:
-#   - name: fct_campaign_performance
-#     description: "Modèle sémantique pour l'analyse de la performance des campagnes."
+    description: "TABLE DE FAITS : Modèle principal qui agrège les coûts marketing et les revenus des ventes par jour et par nom de campagne. C'est la source de vérité pour l'analyse de la performance."
     
-#     # LIGNE MANQUANTE À AJOUTER CI-DESSOUS
-#     model: ref('fct_campaign_performance')
+    columns:
+      # --- DIMENSIONS (Axes d'analyse) ---
+      - name: event_date
+        description: "AXE TEMPOREL : Le jour où les dépenses marketing ont eu lieu."
+        tests:
+          - not_null
 
-#     entities:
-#       - name: campaign
-#         type: foreign
-#         expr: campaign_name
+      - name: campaign_name
+        description: "AXE CAMPAGNE : Le nom de la campagne publicitaire."
+        tests:
+          - not_null
+          # On vérifie que le nom de la campagne existe dans notre table de dimension
+          - relationships:
+              to: ref('mt_dim_campaigns')
+              field: campaign_name
 
-#     dimensions:
-#       - name: event_date
-#         type: time
-#         type_params:
-#           time_granularity: day
+      # --- MESURES (Indicateurs de performance) ---
+      - name: total_cost
+        description: "MESURE MARKETING : Coût total des clics pour cette campagne ce jour-là."
+        meta:
+          measures:
+            daily_total_cost:
+              type: sum
+              description: "Coût total des clics pour cette campagne ce jour-là."
+              value_format_name: usd
 
-#     measures:
-#       - name: total_cost
-#         agg: sum
-#       - name: total_clicks
-#         agg: sum
-#       - name: total_revenue
-#         agg: sum
-#       - name: total_orders
-#         agg: sum
+      - name: total_clicks
+        description: "MESURE MARKETING : Nombre total de clics enregistrés pour cette campagne ce jour-là."
+        meta:
+          measures:
+            daily_total_clicks:
+              type: sum
+              description: "Nombre total de clics enregistrés pour cette campagne ce jour-là."
 
-# metrics:
-#   # --- Métriques de Base ---
-#   - name: ad_spend
-#     label: "Dépenses Publicitaires"
-#     description: "Le coût total des campagnes sur une période."
-#     type: simple
-#     type_params:
-#       measure: total_cost
+      - name: total_revenue
+        description: "MESURE DE VENTE : Revenu total généré par les ventes ce jour-là."
+        meta:
+          measures:
+            daily_total_revenue:
+              type: sum
+              description: "Revenu total généré par les ventes ce jour-là."
+              value_format_name: usd
 
-#   - name: revenue
-#     label: "Revenu"
-#     description: "Le revenu total généré sur une période."
-#     type: simple
-#     type_params:
-#       measure: total_revenue
+      - name: total_orders
+        description: "MESURE DE VENTE : Nombre total de commandes uniques passées ce jour-là."
+        meta:
+          measures:
+            daily_total_orders:
+              type: sum
+              description: "Nombre total de commandes uniques passées ce jour-là."
+    
+    # --- DÉFINITION DES JOINTURES POUR LOOKER ---
+    meta:
+      joins:
+        # Jointure avec la dimension des campagnes
+        - join: mt_dim_campaigns
+          sql_on: "${fct_campaign_performance.campaign_name} = ${mt_dim_campaigns.campaign_name}"
+          relationship: many_to_one
 
-#   - name: clicks
-#     label: "Clics"
-#     description: "Le nombre total de clics sur les publicités."
-#     type: simple
-#     type_params:
-#       measure: total_clicks
-
-#   - name: orders
-#     label: "Commandes"
-#     description: "Le nombre total de commandes."
-#     type: simple
-#     type_params:
-#       measure: total_orders
-
-#   # --- Métriques Dérivées (KPIs) ---
-#   - name: roas
-#     label: "ROAS (Return On Ad Spend)"
-#     description: "Le retour sur investissement publicitaire. (Revenu / Dépenses)"
-#     type: derived
-#     type_params:
-#       expr: "revenue / ad_spend"
-#       metrics:
-#         - revenue
-#         - ad_spend
-
-#   - name: cpc
-#     label: "CPC (Coût Par Clic)"
-#     description: "Le coût moyen pour chaque clic publicitaire. (Dépenses / Clics)"
-#     type: derived
-#     type_params:
-#       expr: "ad_spend / clicks"
-#       metrics:
-#         - ad_spend
-#         - clicks
-
-#   - name: average_order_value
-#     label: "AOV (Panier Moyen)"
-#     description: "La valeur moyenne de chaque commande. (Revenu / Commandes)"
-#     type: derived
-#     type_params:
-#       expr: "revenue / orders"
-#       metrics:
-#         - revenue
-#         - orders
+          # NOUVELLE JOINTURE : Jointure avec la dimension de date
+        - join: dim_time_spine
+          sql_on: "${fct_campaign_performance.event_date} = ${dim_time_spine.date_day}"
+          relationship: many_to_one

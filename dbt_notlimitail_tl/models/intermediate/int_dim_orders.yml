@@ -1,15 +1,32 @@
+# Fichier : dbt_notlimitail_tl/models/intermediate/int_dim_orders.yml
+
 version: 2
 
 models:
   - name: int_dim_orders
-    description: "Modèle intermédiaire qui joint les commandes avec les informations des utilisateurs. Le grain est la commande (une ligne par order_id)."
+    description: "Modèle intermédiaire qui joint chaque commande avec les informations de l'utilisateur. Le grain est la commande."
+    
     columns:
       - name: order_id
         description: "Clé primaire de la commande."
         tests:
           - unique
           - not_null
+
       - name: user_id
-        description: "Clé étrangère vers la table des utilisateurs."
+        description: "Clé étrangère vers l'utilisateur. Chaque commande doit avoir un utilisateur."
         tests:
           - not_null
+          # Note : On ne peut pas tester la relation avec 'mt_dim_users' car cela créerait une dépendance circulaire.
+          # Les tests de relation se font généralement vers l'amont (vers staging) ou au sein de la même couche.
+
+      - name: order_status
+        description: "Statut de la commande."
+        tests:
+          - not_null
+
+      - name: num_items_in_order
+        description: "Nombre d'articles dans la commande. Doit être supérieur à zéro."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 1

@@ -1,16 +1,69 @@
+# Fichier : dbt_notlimitail_tl/models/marts/mt_dim_users.yml
+
 version: 2
 
 models:
   - name: mt_dim_users
-    description: "DIMENSION : Table finale des utilisateurs, enrichie avec des métriques d'achat (RFM)."
+    description: "DIMENSION : Décrit chaque utilisateur et ses attributs. Elle est enrichie avec des métriques clés sur son historique d'achat (RFM). C'est la source de vérité pour répondre à la question 'Qui ?'."
+    
     columns:
+      # --- ATTRIBUTS DESCRIPTIFS (seront des dimensions dans Looker) ---
       - name: user_id
         description: "Clé primaire unique de l'utilisateur."
         tests:
           - unique
           - not_null
+
+      - name: first_name
+        description: "Prénom de l'utilisateur."
+
+      - name: last_name
+        description: "Nom de famille de l'utilisateur."
+
+      - name: email
+        description: "Adresse email de l'utilisateur."
+
+      - name: age
+        description: "Âge de l'utilisateur."
+        meta:
+          dimension:
+            # Looker créera une dimension de type 'number'
+            type: number
+
+      - name: gender
+        description: "Genre de l'utilisateur."
+
+      - name: city
+        description: "Ville de l'utilisateur."
+
+      - name: state
+        description: "État de l'utilisateur."
+
+      - name: country
+        description: "Pays de l'utilisateur."
+
+      - name: user_created_at
+        description: "Date de création du compte de l'utilisateur."
+        # dbt2looker détectera le type date/timestamp et créera un dimension_group
+
+      # --- KPIS / ATTRIBUTS CALCULÉS (seront des dimensions ou mesures dans Looker) ---
+      - name: first_order_date
+        description: "Date de la toute première commande de l'utilisateur."
+        # dbt2looker créera un dimension_group
+
+      - name: last_order_date
+        description: "Date de la commande la plus récente de l'utilisateur."
+        # dbt2looker créera un dimension_group
+
       - name: number_of_orders
-        description: "Nombre total de commandes passées par l'utilisateur."
+        description: "MESURE : Nombre total de commandes passées par cet utilisateur."
         tests:
           - dbt_utils.accepted_range:
               min_value: 0
+        meta:
+          measures:
+            # Nom de la mesure dans Looker
+            total_orders_by_user:
+              # Type d'agrégation LookML
+              type: sum
+              description: "Somme du nombre de commandes pour un groupe d'utilisateurs."

@@ -1,0 +1,31 @@
+# Fichier : dbt_notlimitail_tl/models/intermediate/int_dim_products.yml
+
+version: 2
+
+models:
+  - name: int_dim_products
+    description: "Modèle intermédiaire qui nettoie les données des produits. Il sert de source fiable pour les modèles en aval."
+    
+    columns:
+      - name: product_id
+        description: "Clé primaire du produit."
+        tests:
+          - unique
+          - not_null
+
+      - name: product_name
+        description: "Nom du produit. Les valeurs nulles sont remplacées par 'Unknown Product'."
+        tests:
+          - not_null
+
+      - name: product_cost
+        description: "Coût d'achat du produit. Doit être positif."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+
+      - name: product_retail_price
+        description: "Prix de vente conseillé du produit. Doit être positif."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0

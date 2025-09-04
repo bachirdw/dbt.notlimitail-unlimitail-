@@ -1,20 +1,43 @@
+# Fichier : dbt_notlimitail_tl/models/intermediate/int_dim_events.yml
+
 version: 2
 
 models:
   - name: int_dim_events
-    description: "Modèle intermédiaire qui enrichit les événements avec les coûts de campagne simulés. Le grain est l'événement (une ligne par event_id)."
+    description: "Modèle intermédiaire qui enrichit chaque événement avec les coûts de campagne. Le grain est l'événement (une ligne par event_id)."
+    
     columns:
       - name: event_id
         description: "Clé primaire de l'événement."
         tests:
           - unique
           - not_null
+
+      - name: user_id
+        description: "Clé étrangère vers la dimension des utilisateurs."
+        #tests:
+         # - not_null
+
+      - name: traffic_source
+        description: "La source du trafic, utilisée pour joindre les informations de campagne. Doit exister dans la table des campagnes."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('int_dim_campaigns')
+              field: campaign_id # Dans int_dim_campaigns, la colonne s'appelle campaign_id
+
       - name: event_type
         description: "Type de l'événement (ex: page_view, product_click)."
         tests:
           - not_null
+
+      - name: event_created_at
+        description: "Timestamp de l'événement."
+        tests:
+          - not_null
+
       - name: event_cost
-        description: "Coût simulé de l'événement. Doit être positif ou nul."
+        description: "Coût simulé de l'événement (basé sur le CPC si c'est un clic). Doit être positif ou nul."
         tests:
           - dbt_utils.accepted_range:
               min_value: 0

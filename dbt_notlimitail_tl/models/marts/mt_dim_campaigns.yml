@@ -1,16 +1,45 @@
+# Fichier : dbt_notlimitail_tl/models/marts/mt_dim_campaigns.yml
+
 version: 2
 
 models:
   - name: mt_dim_campaigns
-    description: "DIMENSION : Table finale décrivant les campagnes marketing. C'est la source de vérité pour l'analyse des campagnes."
+    description: "DIMENSION : Décrit chaque campagne publicitaire, son canal, et ses paramètres de coût. C'est la source de vérité pour l'analyse des campagnes."
+    
     columns:
+      # --- ATTRIBUTS DESCRIPTIFS (seront des dimensions dans Looker) ---
       - name: campaign_id
-        description: "Clé primaire unique de la campagne."
+        description: "Clé primaire unique de la campagne (basée sur traffic_source)."
         tests:
           - unique
           - not_null
+
+      - name: campaign_name
+        description: "Nom de la campagne."
+        tests:
+          - not_null
+
       - name: channel
         description: "Canal marketing de la campagne (Paid, Owned, Organic)."
         tests:
           - accepted_values:
               values: ['Paid', 'Owned', 'Organic', 'Other']
+
+      # --- KPIS / ATTRIBUTS NUMÉRIQUES (seront des mesures dans Looker) ---
+      - name: cost_per_click
+        description: "MESURE : Coût unitaire pour chaque clic de cette campagne."
+        meta:
+          measures:
+            average_cost_per_click:
+              type: average
+              description: "Coût par clic moyen pour la campagne ou le groupe de campagnes."
+              value_format_name: usd
+
+      - name: monthly_budget
+        description: "MESURE : Budget mensuel alloué à cette campagne."
+        meta:
+          measures:
+            total_monthly_budget:
+              type: sum
+              description: "Somme des budgets mensuels pour un groupe de campagnes."
+              value_format_name: usd_0

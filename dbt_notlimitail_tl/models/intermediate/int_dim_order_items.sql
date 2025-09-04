@@ -17,7 +17,7 @@ select
     oi.product_id,
 
     -- Informations sur le produit
-    p.product_name,
+   p.product_name, 
     p.product_category,
     p.product_brand,
     p.product_department,

@@ -1,22 +1,39 @@
+# Fichier : dbt_notlimitail_tl/models/intermediate/int_dim_order_items.yml
+
 version: 2
 
 models:
   - name: int_dim_order_items
-    description: "Modèle intermédiaire qui joint les articles de commande avec les informations des produits."
+    description: "Modèle intermédiaire qui joint chaque article de commande avec les informations du produit correspondant. Le grain est l'article de commande."
+    
     columns:
       - name: order_item_id
         description: "Clé primaire de l'article de commande."
         tests:
           - unique
           - not_null
+
       - name: order_id
-        description: "Clé étrangère vers la table des commandes."
+        description: "Clé étrangère vers la commande."
         tests:
           - not_null
+          - relationships:
+              to: ref('int_dim_orders')
+              field: order_id
+
+      - name: user_id
+        description: "Clé étrangère vers l'utilisateur qui a passé la commande."
+        tests:
+          - not_null
+
       - name: product_id
-        description: "Clé étrangère vers la table des produits."
+        description: "Clé étrangère vers le produit commandé."
         tests:
           - not_null
+          - relationships:
+              to: ref('int_dim_products')
+              field: product_id
+
       - name: item_sale_price
         description: "Prix de vente de l'article. Doit être positif."
         tests:

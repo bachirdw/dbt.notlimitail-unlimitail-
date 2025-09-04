@@ -1,16 +1,66 @@
+# Fichier : dbt_notlimitail_tl/models/marts/mt_dim_product.yml
+
 version: 2
 
 models:
   - name: mt_dim_product
-    description: "DIMENSION : Catalogue produit final, enrichi avec des métriques de vente agrégées."
+    description: "DIMENSION : Décrit chaque produit et ses attributs (marque, catégorie) ainsi que des KPIs agrégés sur sa durée de vie. C'est la source de vérité pour répondre à la question 'Quoi ?'."
+    
     columns:
+      # --- ATTRIBUTS DESCRIPTIFS (seront des dimensions dans Looker) ---
       - name: product_id
         description: "Clé primaire unique du produit."
         tests:
           - unique
           - not_null
-      - name: total_revenue
-        description: "Revenu total généré par ce produit. Doit être positif ou nul."
+
+      - name: product_name
+        description: "Nom commercial du produit."
         tests:
-          - dbt_utils.accepted_range:
-              min_value: 0
+          - not_null
+
+      - name: product_category
+        description: "Catégorie du produit."
+
+      - name: product_brand
+        description: "Marque du produit."
+
+      - name: product_department
+        description: "Département ou rayon du produit."
+
+      - name: product_retail_price
+        description: "Prix de vente conseillé du produit. C'est un attribut du produit lui-même."
+        meta:
+          # Même si c'est un nombre, on peut le formater dans Looker
+          dimension:
+            value_format_name: usd
+
+      # --- KPIS PRÉ-CALCULÉS (seront des mesures dans Looker) ---
+      - name: number_of_orders
+        description: "MESURE : Nombre total de commandes distinctes contenant ce produit."
+        meta:
+          measures:
+            # Nom de la mesure dans Looker
+            total_orders_for_product:
+              # Type d'agrégation LookML. On somme les comptes pré-calculés.
+              type: sum
+              description: "Nombre total de commandes distinctes contenant ce produit."
+
+      - name: total_revenue
+        description: "MESURE : Revenu total généré par ce produit sur sa durée de vie."
+        meta:
+          measures:
+            total_revenue_from_product:
+              type: sum
+              description: "Revenu total généré par ce produit sur sa durée de vie."
+              value_format_name: usd
+
+      - name: average_price
+        description: "MESURE : Prix de vente moyen de cet article dans les commandes."
+        meta:
+          measures:
+            average_sale_price_for_product:
+              # Le type 'average' permettra de calculer la moyenne des prix moyens (ex: par catégorie)
+              type: average
+              description: "Prix de vente moyen de cet article dans les commandes."
+              value_format_name: usd

@@ -1,0 +1,14 @@
+# Fichier : dbt_notlimitail_tl/models/marts/dim_time_spine.yml
+
+version: 2
+
+models:
+  - name: dim_time_spine
+    description: "DIMENSION TEMPORELLE : Table de calendrier contenant une ligne pour chaque jour. Elle sert de référence pour toutes les analyses temporelles."
+    
+    columns:
+      - name: date_day
+        description: "Date unique pour chaque ligne de la table. C'est la clé primaire."
+        tests:
+          - unique
+          - not_null

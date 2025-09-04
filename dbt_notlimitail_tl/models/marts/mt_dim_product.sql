@@ -3,7 +3,7 @@
 -- Il agrège les informations de vente pour calculer des KPIs par produit.
 
 with products as (
-    select * from {{ ref('stg_products') }}
+    select * from {{ ref('int_dim_products') }}
 ),
 
 order_items as (
